@@ -1728,6 +1728,9 @@ class FallbackSkill(MycroftSkill):
         utterance will not be see by any other Fallback handlers.
     """
     fallback_handlers = {}
+    skills_config = Configuration.get().get("skills", {})
+    override_order = skills_config.get("override", False)
+    fallback_order = skills_config.get("fallback_order", [])
 
     def __init__(self, name=None, bus=None, use_settings=True):
         MycroftSkill.__init__(self, name, bus, use_settings)
@@ -1805,6 +1808,14 @@ class FallbackSkill(MycroftSkill):
             return False
 
         self.instance_fallback_handlers.append(wrapper)
+
+        if self.override_order:
+            folder = self.root_dir.split("/")[-1]
+            if folder in self.fallback_order:
+                priority = self.fallback_order.index(folder) + 1
+            else:
+                priority = 100
+
         self._register_fallback(wrapper, priority)
 
     @classmethod
