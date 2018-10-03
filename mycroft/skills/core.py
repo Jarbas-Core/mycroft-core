@@ -46,7 +46,8 @@ from mycroft.skills.skill_data import (load_vocabulary, load_regex, to_alnum,
                                        read_vocab_file)
 from mycroft.util import (camel_case_split,
                           resolve_resource_file,
-                          play_audio_file)
+                          play_audio_file,
+                          get_language_dir)
 from mycroft.util.log import LOG
 
 MainModule = '__init__'
@@ -936,8 +937,10 @@ class MycroftSkill:
             string: The full path to the resource file or None if not found
         """
         if res_dirname:
+            root_path = get_language_dir(join(self.root_dir, res_dirname),
+                                         self.lang)
             # Try the old translated directory (dialog/vocab/regex)
-            path = join(self.root_dir, res_dirname, self.lang, res_name)
+            path = join(root_path, res_name)
             if exists(path):
                 return path
 
@@ -947,7 +950,7 @@ class MycroftSkill:
                 return path
 
         # New scheme:  search for res_name under the 'locale' folder
-        root_path = join(self.root_dir, 'locale', self.lang)
+        root_path = get_language_dir(join(self.root_dir, 'locale'), self.lang)
         for path, _, files in os.walk(root_path):
             if res_name in files:
                 return join(path, res_name)
