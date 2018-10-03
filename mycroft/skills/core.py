@@ -1426,8 +1426,10 @@ class MycroftSkill:
     def init_dialog(self, root_directory):
         # If "<skill>/dialog/<lang>" exists, load from there.  Otherwise
         # load dialog from "<skill>/locale/<lang>"
-        dialog_dir = get_language_dir(join(root_directory, 'dialog'), self.lang)
-        locale_dir = get_language_dir(join(root_directory, 'locale'), self.lang)
+        dialog_dir = get_language_dir(join(root_directory, 'dialog'),
+                                      self.lang)
+        locale_dir = get_language_dir(join(root_directory, 'locale'),
+                                      self.lang)
         if exists(dialog_dir):
             self.dialog_renderer = DialogLoader().load(dialog_dir)
         elif exists(locale_dir):
@@ -1442,8 +1444,10 @@ class MycroftSkill:
         self.load_regex_files(root_directory)
 
     def load_vocab_files(self, root_directory):
-        vocab_dir = get_language_dir(join(root_directory, 'vocab'), self.lang)
-        locale_dir = get_language_dir(join(root_directory, 'locale'), self.lang)
+        vocab_dir = get_language_dir(join(root_directory, 'vocab'),
+                                     self.lang)
+        locale_dir = get_language_dir(join(root_directory, 'locale'),
+                                      self.lang)
         if exists(vocab_dir):
             load_vocabulary(vocab_dir, self.bus, self.skill_id)
         elif exists(locale_dir):
@@ -1452,8 +1456,10 @@ class MycroftSkill:
             LOG.debug('No vocab loaded')
 
     def load_regex_files(self, root_directory):
-        regex_dir = get_language_dir(join(root_directory, 'regex'), self.lang)
-        locale_dir = get_language_dir(join(root_directory, 'locale'), self.lang)
+        regex_dir = get_language_dir(join(root_directory, 'regex'),
+                                     self.lang)
+        locale_dir = get_language_dir(join(root_directory, 'locale'),
+                                      self.lang)
         if exists(regex_dir):
             load_regex(regex_dir, self.bus, self.skill_id)
         elif exists(locale_dir):
