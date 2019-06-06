@@ -1,13 +1,19 @@
-# Jarbas Core - XXX
+# Jarbas Core
 
-this is a fork of mycroft, use case is to do something different explained here
+Remixes of [Mycroft-core](https://github.com/MycroftAI/mycroft-core)
 
-## Features
 
-description of changes in this branch, this is like a feature store, link to individual PRs
+## Remixes
 
-* [link to feature PR]() - feature descrition
-* [link to feature PR2]() - feature descrition2
+* [jarbasCore_base](https://github.com/Jarbas-Core/mycroft-core/tree/jarbasCore_base) - reference fork with all stable new features!
+* [jarbasCore_private](https://github.com/Jarbas-Core/mycroft-core/tree/jarbasCore_private) - mycroft-core, but with bundled personal backend
+* [jarbasCore_offline](https://github.com/Jarbas-Core/mycroft-core/tree/jarbasCore_offline) - mycroft-core, but without backend and on-device STT
+
+## Feature Store
+
+here are branches / PRs of individual features
+
+* [feat/pocketsphinxSTT](https://github.com/Jarbas-Core/mycroft-core/tree/feat/pocketsphinxSTT) - adds pocketsphinx as an offline STT option
 
 ## Repo Structure
 
