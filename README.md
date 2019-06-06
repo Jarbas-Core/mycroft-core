@@ -1,13 +1,16 @@
-# Jarbas Core - XXX
+# Jarbas Core - Base
 
-this is a fork of mycroft, use case is to do something different explained here
+jarbas-core base is a fork of mycroft-core, this is my reference implementation that showcases the most stable new features
+
+all branches in this repo named ```feat_jarbas/XXX``` or ```bug_jarbas/XXX``` are periodically rebased against this branch
+
+this might not be the right choice for you, check the Remixes section on the main branch for alternatives.
 
 ## Features
 
-description of changes in this branch, this is like a feature store, link to individual PRs
+I'm trying to make this a bit like a feature store, link to individual PRs
 
 * [link to feature PR]() - feature descrition
-* [link to feature PR2]() - feature descrition2
 
 ## Repo Structure
 
