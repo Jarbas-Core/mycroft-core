@@ -13,7 +13,8 @@ Remixes of [Mycroft-core](https://github.com/MycroftAI/mycroft-core)
 
 here are branches / PRs of individual features
 
-* [feat/pocketsphinxSTT](https://github.com/Jarbas-Core/mycroft-core/tree/feat/pocketsphinxSTT) - adds pocketsphinx as an offline STT option
+* [feat/pocketsphinxSTT](https://github.com/Jarbas-Core/mycroft-core/pull/1) - adds pocketsphinx as an offline STT option
+* [feat/free_google](https://github.com/Jarbas-Core/mycroft-core/pull/2) - adds support for free Google STT
 
 ## Repo Structure
 
