@@ -12,6 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-from mycroft_lang_utils.format import nice_number, nice_time, \
+from lingua_franca.format import nice_number, nice_time, \
     pronounce_number, nice_date, nice_date_time, nice_year, nice_duration, \
     join_list, expand_options

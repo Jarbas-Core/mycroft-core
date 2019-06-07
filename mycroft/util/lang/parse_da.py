@@ -14,7 +14,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-from lingua_franca.parse import fuzzy_match, match_one, \
-    extract_datetime, extract_numbers, extract_number, extract_duration, \
-    normalize, get_gender
+# TODO deprecate this file, backwards compatibility only
+from lingua_franca.lang.parse_da import *

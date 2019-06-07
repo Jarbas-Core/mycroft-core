@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-#
 # Copyright 2017 Mycroft AI Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +12,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-from lingua_franca.parse import fuzzy_match, match_one, \
-    extract_datetime, extract_numbers, extract_number, extract_duration, \
-    normalize, get_gender
+from lingua_franca.lang import get_active_lang, set_active_lang, \
+    get_full_lang_code, get_primary_lang_code
