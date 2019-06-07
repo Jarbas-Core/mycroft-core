@@ -21,6 +21,7 @@ here are branches / PRs of individual features
 * [feat/flexible_lang_dir](https://github.com/Jarbas-Core/mycroft-core/pull/7) - fallback to same language dialects if main is missing, "en-uk" -> "en-us"
 * [refactor/lang utils](https://github.com/Jarbas-Core/mycroft-core/pull/8) - use [lingua franca](https://github.com/MycroftAI/lingua-franca) for language utils
 * [feat/multiple_hotwords](https://github.com/Jarbas-Core/mycroft-core/pull/9) - listen to multiple hotwords
+* [feat/mute_tts](https://github.com/Jarbas-Core/mycroft-core/pull/10) - Mute and Unmute Text to Speech
 
 
 ## Repo Structure
