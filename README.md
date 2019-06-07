@@ -19,6 +19,7 @@ here are branches / PRs of individual features
 * [feat/message_targetting](https://github.com/Jarbas-Core/mycroft-core/pull/5) - allow bus messages to be targetted at specific components
 * [feat/private_mail](https://github.com/Jarbas-Core/mycroft-core/pull/6) - send email from your account to any recipient, and not from backend
 * [feat/flexible_lang_dir](https://github.com/Jarbas-Core/mycroft-core/pull/7) - fallback to same language dialects if main is missing, "en-uk" -> "en-us"
+* [refactor/lang utils](https://github.com/Jarbas-Core/mycroft-core/pull/8) - use [lingua franca](https://github.com/MycroftAI/lingua-franca) for language utils
 
 
 ## Repo Structure
