@@ -501,7 +501,7 @@ class ResponsiveRecognizer(speech_recognition.Recognizer):
                         'hotword': hotword,
                         'start_listening': listen,
                         'sound': sound,
-                        "engine": engine.module
+                        "engine": engine.__class__.__name__
                     }
                     emitter.emit("recognizer_loop:hotword", payload)
 
@@ -520,7 +520,6 @@ class ResponsiveRecognizer(speech_recognition.Recognizer):
 
                         if not isdir(self.saved_wake_words_dir):
                             os.mkdir(self.saved_wake_words_dir)
-                        module = engine.__class__.__name__
 
                         fn = join(self.saved_wake_words_dir,
                                   '_'.join([str(mtd[k]) for k in sorted(mtd)])
