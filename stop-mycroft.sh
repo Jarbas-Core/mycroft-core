@@ -25,12 +25,13 @@ function help() {
     echo "usage: ${script} [service]"
     echo
     echo "Service:"
-    echo "  all       ends core services: bus, audio, skills, voice"
-    echo "  (none)    same as \"all\""
-    echo "  bus       stop the Mycroft messagebus service"
-    echo "  audio     stop the audio playback service"
-    echo "  skills    stop the skill service"
-    echo "  voice     stop voice capture service"
+    echo "  all              ends core services: bus, audio, skills, voice"
+    echo "  (none)           same as \"all\""
+    echo "  bus              stop the Mycroft messagebus service"
+    echo "  audio            stop the audio playback service"
+    echo "  skills           stop the skill service"
+    echo "  voice            stop voice capture service"
+    echo "  local_speech     stop local speech capture service"
     echo "  enclosure stop enclosure (hardware/gui interface) service"
     echo
     echo "Examples:"
@@ -99,6 +100,7 @@ case ${OPT} in
         end-process audio
         end-process speech
         end-process enclosure
+        end-process client.local_speech
         ;;
     "bus")
         end-process messagebus.service
@@ -111,6 +113,9 @@ case ${OPT} in
         ;;
     "voice")
         end-process speech
+        ;;
+    "local_speech")
+        end-process client.local_speech
         ;;
     "enclosure")
         end-process enclosure

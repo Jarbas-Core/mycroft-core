@@ -33,6 +33,7 @@ function help() {
     echo "  bus                      the messagebus service"
     echo "  skills                   the skill service"
     echo "  voice                    voice capture service"
+    echo "  local_speech             local speech capture service"
     # echo "  wifi                     wifi setup service"
     echo "  enclosure                mark_1 enclosure service"
     echo
@@ -66,6 +67,7 @@ function name-to-script-path() {
         "audio")             _module="mycroft.audio" ;;
         "voice")             _module="mycroft.client.speech" ;;
         "cli")               _module="mycroft.client.text" ;;
+        "local_speech")               _module="mycroft.client.local_speech" ;;
         "audiotest")         _module="mycroft.util.audio_test" ;;
         "audioaccuracytest") _module="mycroft.audio-accuracy-test" ;;
         "enclosure")         _module="mycroft.client.enclosure" ;;
@@ -146,6 +148,7 @@ function launch-all() {
     launch-background skills
     launch-background audio
     launch-background voice
+    launch-background local_speech
     launch-background enclosure
 }
 
@@ -206,6 +209,9 @@ case ${_opt} in
         launch-background ${_opt}
         ;;
     "voice")
+        launch-background ${_opt}
+        ;;
+    "local_speech")
         launch-background ${_opt}
         ;;
 
