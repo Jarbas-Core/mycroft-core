@@ -326,6 +326,7 @@ function install_venv() {
 
 install_deps
 
+
 # Configure to use the standard commit template for
 # this repo only.
 git config commit.template .gitmessage
@@ -410,6 +411,30 @@ fi
 if ! pip install -r test-requirements.txt ; then
     echo "Warning test requirements wasn't installed, Note: normal operation should still work fine..."
 fi
+
+function install_pocketsphinx() {
+    # clone pocketsphinx-python at HEAD (fix to a constant version later)
+    if [ ! -d ${TOP}/pocketsphinx-python ] ; then
+        # build sphinxbase and pocketsphinx if we haven't already
+        git clone --recursive https://github.com/cmusphinx/pocketsphinx-python
+        pushd ./pocketsphinx-python/sphinxbase
+        ./autogen.sh
+        ./configure
+        make -j$CORES
+        popd
+        pushd ./pocketsphinx-python/pocketsphinx
+        ./autogen.sh
+        ./configure
+        make -j$CORES
+        popd
+    fi
+
+    # build and install pocketsphinx python bindings
+    cd ${TOP}/pocketsphinx-python
+    python setup.py install
+}
+
+install_pocketsphinx
 
 SYSMEM=$( free | awk '/^Mem:/ { print $2 }' )
 MAXCORES=$(($SYSMEM / 512000))
