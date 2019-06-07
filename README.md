@@ -1,16 +1,17 @@
-# Jarbas Core - Base
+# Jarbas Core -Base
 
-jarbas-core base is a fork of mycroft-core, this is my reference implementation that showcases the most stable new features
-
-all branches in this repo named ```feat_jarbas/XXX``` or ```bug_jarbas/XXX``` are periodically rebased against this branch
-
-this might not be the right choice for you, check the Remixes section on the main branch for alternatives.
+jarbas-core base is a fork of mycroft-core, this is my reference implementation that showcases the most stable new features, made fully independent of home backend and optimized for privacy
 
 ## Features
 
-I'm trying to make this a bit like a feature store, link to individual PRs
+here are branches / PRs of individual features
 
-* [link to feature PR]() - feature descrition
+* [feat/pocketsphinxSTT](https://github.com/Jarbas-Core/mycroft-core/pull/1) - adds pocketsphinx as an offline STT option
+* [feat/free_google](https://github.com/Jarbas-Core/mycroft-core/pull/2) - adds support for free Google STT, key is shared by many users
+* [feat/optional_backend](https://github.com/Jarbas-Core/mycroft-core/pull/3) - removes the need for a home backend
+* [feat/converse_timeout_event](https://github.com/Jarbas-Core/mycroft-core/pull/4) - new event to allow skills to know when they are no longer active (converse method for continuous dialog)
+* [feat/message_targetting](https://github.com/Jarbas-Core/mycroft-core/pull/5) - allow bus messages to be targetted at specific components
+
 
 ## Repo Structure
 
