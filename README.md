@@ -11,6 +11,7 @@ here are branches / PRs of individual features
 * [feat/optional_backend](https://github.com/Jarbas-Core/mycroft-core/pull/3) - removes the need for a home backend
 * [feat/converse_timeout_event](https://github.com/Jarbas-Core/mycroft-core/pull/4) - new event to allow skills to know when they are no longer active (converse method for continuous dialog)
 * [feat/message_targetting](https://github.com/Jarbas-Core/mycroft-core/pull/5) - allow bus messages to be targetted at specific components
+* [feat/private_mail](https://github.com/Jarbas-Core/mycroft-core/pull/6) - send email from your account to any recipient, and not from backend
 
 
 ## Repo Structure
