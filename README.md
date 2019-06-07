@@ -29,6 +29,8 @@ branch naming conventions and meanings
 * dev - last syncronization with mycroft-core, unmodified
 * feat/XXX - new mycroft-core feature, PR can be made against mycroft, periodically rebased against dev
 * bug/XXX - mycroft-core bugfix, PR can be made against mycroft, periodically rebased against dev
+* refactor/XXX - mycroft-core code cleanup, PR can be made against mycroft, periodically rebased against dev
 * jarbasCore_XXX - XXX is descriptive of changes applied, description and link in main branch README.md
 * feat_jarbas/XXX - new jarbas-core feature, non mycroft-compatible
 * bug_jarbas/XXX - jarbas-core bugfix, non mycroft-compatible
+* refactor_jarbas/XXX - jarbas-core code cleanup, non mycroft-compatible
