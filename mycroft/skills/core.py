@@ -1810,11 +1810,22 @@ class FallbackSkill(MycroftSkill):
         self.instance_fallback_handlers.append(wrapper)
 
         if self.override:
+            #  ========   ========   =======================================
+            #  Priority   Who?       Purpose
+            #  ========   ========   =======================================
+            #     1       RESERVED   Slot for pre-Padatious if needed
+            #     5       MYCROFT    Padatious near match (conf > 0.8)
+            #     6       USER       General
+            #     89      MYCROFT    Padatious loose match (conf > 0.5)
+            #     90      USER       Uncaught intents
+            #     100     MYCROFT    Fallback Unknown or other future use
+            #  ========   ========   =======================================
+
             folder = self.root_dir.split("/")[-1]
             if folder in self.fallback_order:
-                priority = self.fallback_order.index(folder) + 1
+                priority = self.fallback_order.index(folder) + 5
             else:
-                priority = 100
+                priority = 88
 
         self._register_fallback(wrapper, priority)
 
