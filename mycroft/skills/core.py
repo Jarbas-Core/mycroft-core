@@ -1822,10 +1822,15 @@ class FallbackSkill(MycroftSkill):
             #  ========   ========   =======================================
 
             folder = self.root_dir.split("/")[-1]
-            if folder in self.fallback_order:
-                priority = self.fallback_order.index(folder) + 5
+            if folder == "padatious_service":
+                # do not override padatious intents
+                pass
+            elif folder in self.fallback_order:
+                # assign new priority
+                priority = self.fallback_order.index(folder) + 6
             else:
-                priority = 88
+                # offset priority to keep order of non overrided fallbacks
+                priority += len(self.fallback_order) + 6
 
         self._register_fallback(wrapper, priority)
 
