@@ -13,6 +13,8 @@ here are branches / PRs of individual features
 * [feat/message_targetting](https://github.com/Jarbas-Core/mycroft-core/pull/5) - allow bus messages to be targetted at specific components
 * [feat/private_mail](https://github.com/Jarbas-Core/mycroft-core/pull/6) - send email from your account to any recipient, and not from backend
 * [feat/flexible_lang_dir](https://github.com/Jarbas-Core/mycroft-core/pull/7) - fallback to same language dialects if main is missing, "en-uk" -> "en-us"
+* [feat/mute_tts](https://github.com/Jarbas-Core/mycroft-core/pull/10) - Mute and Unmute Text to Speech
+* [feat/fallback_order_override](https://github.com/Jarbas-Core/mycroft-core/pull/11) - Override fallback skill execution order in configuration
 
 
 ## Repo Structure
