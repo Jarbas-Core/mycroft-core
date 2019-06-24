@@ -1728,6 +1728,9 @@ class FallbackSkill(MycroftSkill):
         utterance will not be see by any other Fallback handlers.
     """
     fallback_handlers = {}
+    skills_config = Configuration.get().get("skills", {})
+    override = skills_config.get("override", False)
+    fallback_order = skills_config.get("fallback_order", [])
 
     def __init__(self, name=None, bus=None, use_settings=True):
         MycroftSkill.__init__(self, name, bus, use_settings)
@@ -1805,6 +1808,30 @@ class FallbackSkill(MycroftSkill):
             return False
 
         self.instance_fallback_handlers.append(wrapper)
+
+        if self.override:
+            #  ========   ========   =======================================
+            #  Priority   Who?       Purpose
+            #  ========   ========   =======================================
+            #     1       RESERVED   Slot for pre-Padatious if needed
+            #     5       MYCROFT    Padatious near match (conf > 0.8)
+            #     6       USER       General
+            #     89      MYCROFT    Padatious loose match (conf > 0.5)
+            #     90      USER       Uncaught intents
+            #     100     MYCROFT    Fallback Unknown or other future use
+            #  ========   ========   =======================================
+
+            folder = self.root_dir.split("/")[-1]
+            if folder == "padatious_service":
+                # do not override padatious intents
+                pass
+            elif folder in self.fallback_order:
+                # assign new priority
+                priority = self.fallback_order.index(folder) + 6
+            else:
+                # offset priority to keep order of non overrided fallbacks
+                priority += len(self.fallback_order) + 6
+
         self._register_fallback(wrapper, priority)
 
     @classmethod
