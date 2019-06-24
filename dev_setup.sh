@@ -275,7 +275,7 @@ function install_deps() {
     echo "Installing packages..."
     if found_exe zypper ; then
         # OpenSUSE
-        $SUDO zypper install -y git python3 python3-devel libtool libffi-devel libopenssl-devel autoconf automake bison swig portaudio-devel mpg123 flac curl libicu-devel pkg-config libjpeg-devel libfann-devel python3-curses pulseaudio
+        $SUDO zypper install -y git python3 python3-devel libtool libffi-devel libopenssl-devel autoconf automake bison swig curl libicu-devel pkg-config libjpeg-devel libfann-devel python3-curses
         $SUDO zypper install -y -t pattern devel_C_C++
     elif found_exe yum && os_is centos ; then
         # CentOS
@@ -290,10 +290,10 @@ function install_deps() {
         redhat_common_install
     elif found_exe apt-get ; then
         # Debian / Ubuntu
-        $SUDO apt-get install -y git python3 python3-dev python-setuptools python-gobject-2-dev libtool libffi-dev libssl-dev autoconf automake bison swig libglib2.0-dev portaudio19-dev mpg123 screen flac curl libicu-dev pkg-config automake libjpeg-dev libfann-dev build-essential jq
+        $SUDO apt-get install -y git python3 python3-dev python-setuptools python-gobject-2-dev libtool libffi-dev libssl-dev autoconf automake bison swig libglib2.0-dev screen flac curl libicu-dev pkg-config automake libjpeg-dev libfann-dev build-essential jq
     elif found_exe pacman; then
         # Arch Linux
-        $SUDO pacman -S --needed --noconfirm git python python-pip python-setuptools python-virtualenv python-gobject python-virtualenvwrapper libffi swig portaudio mpg123 screen flac curl icu libjpeg-turbo base-devel jq pulseaudio pulseaudio-alsa
+        $SUDO pacman -S --needed --noconfirm git python python-pip python-setuptools python-virtualenv python-gobject python-virtualenvwrapper libffi swig screen flac curl icu libjpeg-turbo base-devel jq
         pacman -Qs "^fann$" &> /dev/null || (
             git clone  https://aur.archlinux.org/fann.git
             cd fann
@@ -303,7 +303,7 @@ function install_deps() {
         )
     elif found_exe dnf ; then
         # Fedora
-        $SUDO dnf install -y git python3 python3-devel python3-pip python3-setuptools python3-virtualenv pygobject3-devel libtool libffi-devel openssl-devel autoconf bison swig glib2-devel portaudio-devel mpg123 mpg123-plugins-pulseaudio screen curl pkgconfig libicu-devel automake libjpeg-turbo-devel fann-devel gcc-c++ redhat-rpm-config jq
+        $SUDO dnf install -y git python3 python3-devel python3-pip python3-setuptools python3-virtualenv pygobject3-devel libtool libffi-devel openssl-devel autoconf bison swig glib2-devel screen curl pkgconfig libicu-devel automake libjpeg-turbo-devel fann-devel gcc-c++ redhat-rpm-config jq
     else
     	echo
         echo "${GREEN}Could not find package manager"
@@ -329,33 +329,6 @@ install_deps
 # Configure to use the standard commit template for
 # this repo only.
 git config commit.template .gitmessage
-
-# Check whether to build mimic (it takes a really long time!)
-build_mimic="n"
-if [[ ${opt_forcemimicbuild} == true ]] ; then
-    build_mimic="y"
-else
-    # first, look for a build of mimic in the folder
-    has_mimic=""
-    if [[ -f ${TOP}/mimic/bin/mimic ]] ; then
-        has_mimic=$( ${TOP}/mimic/bin/mimic -lv | grep Voice ) || true
-    fi
-
-    # in not, check the system path
-    if [ "$has_mimic" == "" ] ; then
-        if [ -x "$(command -v mimic)" ] ; then
-            has_mimic="$( mimic -lv | grep Voice )" || true
-        fi
-    fi
-
-    if [ "$has_mimic" == "" ]; then
-        if [[ ${opt_skipmimicbuild} == true ]] ; then
-            build_mimic="n"
-        else
-            build_mimic="y"
-        fi
-    fi
-fi
 
 if [ ! -x "${VIRTUALENV_ROOT}/bin/activate" ] ; then
     if ! install_venv ; then
@@ -430,18 +403,10 @@ fi
 
 echo "Building with $CORES cores."
 
-#build and install pocketsphinx
-#cd ${TOP}
-#${TOP}/scripts/install-pocketsphinx.sh -q
-#build and install mimic
 cd "${TOP}"
 
-if [[ "$build_mimic" == "y" ]] || [[ "$build_mimic" == "Y" ]] ; then
-    echo "WARNING: The following can take a long time to run!"
-    "${TOP}/scripts/install-mimic.sh" " ${CORES}"
-else
-    echo "Skipping mimic build."
-fi
+echo "Skipping mimic build."
+
 
 # set permissions for common scripts
 chmod +x start-mycroft.sh

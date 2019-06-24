@@ -28,22 +28,14 @@ function help() {
     echo
     echo "Services COMMANDs:"
     echo "  all                      runs core services: bus, audio, skills, voice"
-    echo "  debug                    runs core services, then starts the CLI"
-    echo "  audio                    the audio playback service"
     echo "  bus                      the messagebus service"
     echo "  skills                   the skill service"
-    echo "  voice                    voice capture service"
-    # echo "  wifi                     wifi setup service"
-    echo "  enclosure                mark_1 enclosure service"
     echo
     echo "Tool COMMANDs:"
-    echo "  cli                      the Command Line Interface"
     echo "  unittest                 run mycroft-core unit tests (requires pytest)"
     echo "  skillstest               run the skill autotests for all skills (requires pytest)"
     echo
     echo "Util COMMANDs:"
-    echo "  audiotest                attempt simple audio validation"
-    echo "  audioaccuracytest        more complex audio validation"
     echo "  sdkdoc                   generate sdk documentation"
     echo
     echo "Options:"
@@ -52,8 +44,6 @@ function help() {
     echo "Examples:"
     echo "  ${script} all"
     echo "  ${script} all restart"
-    echo "  ${script} cli"
-    echo "  ${script} unittest"
 
     exit 1
 }
@@ -63,12 +53,6 @@ function name-to-script-path() {
     case ${1} in
         "bus")               _module="mycroft.messagebus.service" ;;
         "skills")            _module="mycroft.skills" ;;
-        "audio")             _module="mycroft.audio" ;;
-        "voice")             _module="mycroft.client.speech" ;;
-        "cli")               _module="mycroft.client.text" ;;
-        "audiotest")         _module="mycroft.util.audio_test" ;;
-        "audioaccuracytest") _module="mycroft.audio-accuracy-test" ;;
-        "enclosure")         _module="mycroft.client.enclosure" ;;
 
         *)
             echo "Error: Unknown name '${1}'"
@@ -144,9 +128,6 @@ function launch-all() {
     echo "Starting all mycroft-core services"
     launch-background bus
     launch-background skills
-    launch-background audio
-    launch-background voice
-    launch-background enclosure
 }
 
 function check-dependencies() {
@@ -199,31 +180,10 @@ case ${_opt} in
     "bus")
         launch-background ${_opt}
         ;;
-    "audio")
-        launch-background ${_opt}
-        ;;
     "skills")
         launch-background ${_opt}
         ;;
-    "voice")
-        launch-background ${_opt}
-        ;;
 
-    "debug")
-        launch-all
-        launch-process cli
-        ;;
-
-    "cli")
-        require-process bus
-        require-process skills
-        launch-process ${_opt}
-        ;;
-
-    # TODO: Restore support for Wifi Setup on a Picroft, etc.
-    # "wifi")
-    #    launch-background ${_opt}
-    #    ;;
     "unittest")
         source-venv
         pytest test/unittests/ --cov=mycroft "$@"
@@ -235,12 +195,6 @@ case ${_opt} in
     "skillstest")
         source-venv
         pytest test/integrationtests/skills/discover_tests.py "$@"
-        ;;
-    "audiotest")
-        launch-process ${_opt}
-        ;;
-    "audioaccuracytest")
-        launch-process ${_opt}
         ;;
     "sdkdoc")
         source-venv
