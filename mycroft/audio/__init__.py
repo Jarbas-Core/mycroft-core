@@ -14,8 +14,6 @@
 #
 import time
 
-from mycroft.util.signal import check_for_signal, create_signal
-
 
 def is_speaking():
     """Determine if Text to Speech is occurring
@@ -23,7 +21,7 @@ def is_speaking():
     Returns:
         bool: True while still speaking
     """
-    return check_for_signal("isSpeaking", -1)
+    return False
 
 
 def wait_while_speaking():
@@ -33,21 +31,8 @@ def wait_while_speaking():
     briefly to ensure that any preceeding request to speak has time to
     begin.
     """
-    time.sleep(0.3)  # Wait briefly in for any queued speech to begin
-    while is_speaking():
-        time.sleep(0.1)
+    time.sleep(0.3)  # Wait briefly
 
 
 def stop_speaking():
-    # TODO: Less hacky approach to this once Audio Manager is implemented
-    # Skills should only be able to stop speech they've initiated
-    from mycroft.messagebus.send import send
-    create_signal('stoppingTTS')
-    send('mycroft.audio.speech.stop')
-
-    # Block until stopped
-    while check_for_signal("isSpeaking", -1):
-        time.sleep(0.25)
-
-    # This consumes the signal
-    check_for_signal('stoppingTTS')
+    pass
