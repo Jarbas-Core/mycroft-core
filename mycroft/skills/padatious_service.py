@@ -17,7 +17,7 @@ from subprocess import call
 from threading import Event
 from time import time as get_time, sleep
 
-from os.path import expanduser, isfile
+from os.path import expanduser, isfile, dirname
 from pkg_resources import get_distribution
 
 from mycroft.configuration import Configuration
@@ -61,6 +61,7 @@ class PadatiousService(FallbackSkill):
         self.bus.on('detach_skill', self.handle_detach_skill)
         self.bus.on('mycroft.skills.initialized', self.train)
 
+        self.root_dir = dirname(__file__)  # for override
         # Call Padatious an an early fallback, looking for a high match intent
         self.register_fallback(self.handle_fallback,
                                PadatiousService.fallback_tight_match)
