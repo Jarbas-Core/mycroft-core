@@ -183,18 +183,16 @@ class ResponsiveRecognizer(speech_recognition.Recognizer):
     # Time between pocketsphinx checks for the wake word
     SEC_BETWEEN_WW_CHECKS = 0.2
 
-    def __init__(self, wake_word_recognizer):
+    def __init__(self, hot_word_engines):
 
         self.config = Configuration.get()
         listener_config = self.config.get('listener')
         self.upload_url = listener_config['wake_word_upload']['url']
         self.upload_disabled = listener_config['wake_word_upload']['disable']
-        self.wake_word_name = wake_word_recognizer.key_phrase
 
         self.overflow_exc = listener_config.get('overflow_exception', False)
 
         speech_recognition.Recognizer.__init__(self)
-        self.wake_word_recognizer = wake_word_recognizer
         self.audio = pyaudio.PyAudio()
         self.multiplier = listener_config.get('multiplier')
         self.energy_ratio = listener_config.get('energy_ratio')
@@ -214,10 +212,11 @@ class ResponsiveRecognizer(speech_recognition.Recognizer):
         self.filenames_to_upload = []
         self.mic_level_file = os.path.join(get_ipc_directory(), "mic_level")
         self._stop_signaled = False
+        self.hotword_engines = hot_word_engines or {}
 
         # The maximum audio in seconds to keep for transcribing a phrase
         # The wake word must fit in this time
-        num_phonemes = wake_word_recognizer.num_phonemes
+        num_phonemes = 10
         len_phoneme = listener_config.get('phoneme_duration', 120) / 1000.0
         self.TEST_WW_SEC = num_phonemes * len_phoneme
         self.SAVED_WW_SEC = max(3, self.TEST_WW_SEC)
@@ -226,6 +225,12 @@ class ResponsiveRecognizer(speech_recognition.Recognizer):
             self.account_id = DeviceApi().get()['user']['uuid']
         except (requests.RequestException, AttributeError):
             self.account_id = '0'
+
+    def feed_hotwords(self, chunk):
+        """ feed sound chunk to hotword engines that perform streaming
+        predictions (precise) """
+        for hw in self.hotword_engines:
+            self.hotword_engines[hw]["engine"].update(chunk)
 
     def record_sound_chunk(self, source):
         return source.stream.read(source.CHUNK, self.overflow_exc)
@@ -362,17 +367,17 @@ class ResponsiveRecognizer(speech_recognition.Recognizer):
         """
         self._stop_signaled = True
 
-    def _compile_metadata(self):
-        ww_module = self.wake_word_recognizer.__class__.__name__
+    def _compile_metadata(self, hw):
+        ww_module = self.hotwords[hw]["engine"].__class__.__name__
         if ww_module == 'PreciseHotword':
-            model_path = self.wake_word_recognizer.precise_model
+            model_path = self.hotwords[hw]["engine"].precise_model
             with open(model_path, 'rb') as f:
                 model_hash = md5(f.read()).hexdigest()
         else:
             model_hash = '0'
 
         return {
-            'name': self.wake_word_name.replace(' ', '-'),
+            'name': self.hotwords[hw]["engine"].key_phrase.replace(' ', '-'),
             'engine': md5(ww_module.encode('utf-8')).hexdigest(),
             'time': str(int(1000 * get_time())),
             'sessionId': SessionManager.get().session_id,
@@ -388,7 +393,7 @@ class ResponsiveRecognizer(speech_recognition.Recognizer):
             }
         )
 
-    def _wait_until_wake_word(self, source, sec_per_buffer):
+    def _wait_until_wake_word(self, source, sec_per_buffer, emitter):
         """Listen continuously on source until a wake word is spoken
 
         Args:
@@ -465,26 +470,56 @@ class ResponsiveRecognizer(speech_recognition.Recognizer):
                 byte_data = byte_data[len(chunk):] + chunk
 
             buffers_since_check += 1.0
-            self.wake_word_recognizer.update(chunk)
+            self.feed_hotwords(chunk)
             if buffers_since_check > buffers_per_check:
                 buffers_since_check -= buffers_per_check
                 chopped = byte_data[-test_size:] \
                     if test_size < len(byte_data) else byte_data
                 audio_data = chopped + silence
-                said_wake_word = \
-                    self.wake_word_recognizer.found_wake_word(audio_data)
+                said_hot_word = False
+                for hotword in self.check_for_hotwords(audio_data, emitter):
+                    said_hot_word = True
+                    engine = self.hotword_engines[hotword]["engine"]
+                    sound = self.hotword_engines[hotword]["sound"]
+                    utterance = self.hotword_engines[hotword]["utterance"]
+                    listen = self.hotword_engines[hotword]["listen"]
 
-                # Save positive wake words as appropriate
-                if said_wake_word:
+                    LOG.debug("Hot Word: " + hotword)
+                    # If enabled, play a wave file with a short sound to audibly
+                    # indicate hotword was detected.
+                    if sound:
+                        try:
+                            audio_file = resolve_resource_file(sound)
+                            source.mute()
+                            play_wav(audio_file).wait()
+                            source.unmute()
+                        except Exception as e:
+                            LOG.warning(e)
+
+                    # Hot Word succeeded
+                    payload = {
+                        'hotword': hotword,
+                        'start_listening': listen,
+                        'sound': sound,
+                        "engine": engine.__class__.__name__
+                    }
+                    emitter.emit("recognizer_loop:hotword", payload)
+
+                    if utterance:
+                        # send the transcribed word on for processing
+                        payload = {
+                            'utterances': [utterance]
+                        }
+                        emitter.emit("recognizer_loop:utterance", payload)
+
                     audio = None
-                    mtd = None
+                    mtd = self._compile_metadata(hotword)
                     if self.save_wake_words:
                         # Save wake word locally
                         audio = self._create_audio_data(byte_data, source)
-                        mtd = self._compile_metadata()
+
                         if not isdir(self.saved_wake_words_dir):
                             os.mkdir(self.saved_wake_words_dir)
-                        module = self.wake_word_recognizer.__class__.__name__
 
                         fn = join(self.saved_wake_words_dir,
                                   '_'.join([str(mtd[k]) for k in sorted(mtd)])
@@ -492,14 +527,30 @@ class ResponsiveRecognizer(speech_recognition.Recognizer):
                         with open(fn, 'wb') as f:
                             f.write(audio.get_wav_data())
 
+                    # if a wake word is success full then upload wake word
                     if self.config['opt_in'] and not self.upload_disabled:
                         # Upload wake word for opt_in people
                         Thread(
                             target=self._upload_wake_word, daemon=True,
                             args=[audio or
                                   self._create_audio_data(byte_data, source),
-                                  mtd or self._compile_metadata()]
+                                  mtd]
                         ).start()
+
+                    if listen:
+                        said_wake_word = True
+
+                if said_hot_word:
+                    # reset bytearray to store wake word audio in, else many
+                    # serial detections
+                    byte_data = silence
+
+    def check_for_hotwords(self, audio_data, emitter):
+        # check hot word
+        for hotword in self.hotword_engines:
+            engine = self.hotword_engines[hotword]["engine"]
+            if engine.found_wake_word(audio_data):
+                yield hotword
 
     @staticmethod
     def _create_audio_data(raw_data, source):
@@ -540,7 +591,7 @@ class ResponsiveRecognizer(speech_recognition.Recognizer):
         self.adjust_for_ambient_noise(source, 1.0)
 
         LOG.debug("Waiting for wake word...")
-        self._wait_until_wake_word(source, sec_per_buffer)
+        self._wait_until_wake_word(source, sec_per_buffer, emitter)
         if self._stop_signaled:
             return
 
@@ -574,8 +625,8 @@ class ResponsiveRecognizer(speech_recognition.Recognizer):
         if self.dynamic_energy_threshold and energy > 0:
             # account for different chunk sizes and rates
             damping = (
-                self.dynamic_energy_adjustment_damping ** seconds_per_buffer)
+                    self.dynamic_energy_adjustment_damping ** seconds_per_buffer)
             target_energy = energy * self.energy_ratio
             self.energy_threshold = (
-                self.energy_threshold * damping +
-                target_energy * (1 - damping))
+                    self.energy_threshold * damping +
+                    target_energy * (1 - damping))
