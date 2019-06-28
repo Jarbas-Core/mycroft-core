@@ -33,5 +33,7 @@ padaos==0.1.9
 precise-runner==0.2.1
 petact==0.1.2
 
+git+https://github.com/MycroftAI/lingua-franca
+
 # dev setup tools
 pep8==1.7.0
